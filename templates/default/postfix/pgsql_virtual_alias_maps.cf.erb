@@ -1,0 +1,6 @@
+user = mailauth
+password = <%= @node[:mailserver][:db_mailauth_password] %>
+hosts = localhost
+dbname = mailconfig
+query = SELECT goto FROM alias WHERE address='%s' AND active = '1'
+

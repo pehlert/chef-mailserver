@@ -1,0 +1,105 @@
+# LOCAL PATHNAME INFORMATION
+#
+queue_directory = /var/spool/postfix
+command_directory = /usr/sbin
+daemon_directory = /usr/lib/postfix
+data_directory = /var/lib/postfix
+
+# QUEUE AND PROCESS OWNERSHIP
+#
+mail_owner = postfix
+
+# INTERNET HOST AND DOMAIN NAMES
+# 
+myhostname = <%= @node[:fqdn] %>
+
+# TODO: This should be the TLD..
+#mydomain = domain.tld
+
+# SENDING MAIL
+# 
+myorigin = $mydomain
+
+
+# TRUST AND RELAY CONTROL
+#
+# TODO: How can we automatically ensure that this has the right entries?! 
+#mynetworks = 88.198.51.243, 127.0.0.0/8
+#mynetworks = $config_directory/mynetworks
+#mynetworks = hash:/etc/postfix/network_table
+
+# DELIVERY TO MAILBOX
+#
+#home_mailbox = Mailbox
+#home_mailbox = Maildir/
+home_mailbox = .maildir/
+
+# The mailbox_command parameter specifies the optional external
+# command to use instead of mailbox delivery. The command is run as
+# the recipient with proper HOME, SHELL and LOGNAME environment settings.
+# Exception:  delivery for root is done as $default_user.
+#
+# IF YOU USE THIS TO DELIVER MAIL SYSTEM-WIDE, YOU MUST SET UP AN
+# ALIAS THAT FORWARDS MAIL FOR ROOT TO A REAL USER.
+#
+mailbox_command = /usr/lib/dovecot/deliver
+#mailbox_command = /some/where/procmail -a "$EXTENSION"
+
+
+# SHOW SOFTWARE VERSION OR NOT
+#
+# The smtpd_banner parameter specifies the text that follows the 220
+# code in the SMTP server's greeting banner. Some people like to see
+# the mail version advertised. By default, Postfix shows no version.
+#
+# You MUST specify $myhostname at the start of the text. That is an
+# RFC requirement. Postfix itself does not care.
+#
+#smtpd_banner = $myhostname ESMTP $mail_name
+#smtpd_banner = $myhostname ESMTP $mail_name ($mail_version)
+
+
+# Dovecot
+dovecot_destination_recipient_limit = 1
+virtual_transport = dovecot
+
+# SMTP Auth
+smtpd_sasl_auth_enable = yes
+smtpd_sasl_type = dovecot
+smtpd_sasl_path = private/auth
+
+# Virtual mailboxes
+virtual_alias_maps = pgsql:/etc/postfix/pgsql_virtual_alias_maps.cf
+virtual_mailbox_domains = pgsql:/etc/postfix/pgsql_virtual_domain_maps.cf
+virtual_mailbox_maps = pgsql:/etc/postfix/pgsql_virtual_mailbox_maps.cf
+relay_domains = pgsql:/etc/postfix/pgsql_relay_domain_maps.cf
+
+# Misc
+smtpd_reject_unlisted_sender = no
+smtpd_sender_restrictions = reject_non_fqdn_sender
+# Better configure this in master.cf for relevant submission service
+smtpd_recipient_restrictions=
+  permit_mynetworks,
+  permit_sasl_authenticated,
+  reject_unauth_destination
+ 
+# smtpd TLS
+smtpd_tls_cert_file=/etc/ssl/certs/ssl-cert-snakeoil.pem
+smtpd_tls_key_file=/etc/ssl/private/ssl-cert-snakeoil.key
+smtpd_use_tls=yes
+smtpd_tls_session_cache_database = btree:${queue_directory}/smtpd_scache
+smtp_tls_session_cache_database = btree:${queue_directory}/smtp_scache
+
+# Spam rejection
+reject_rbl_client = zen.spamhaus.org
+
+# Amavis, SpamAssassin, ClamAV
+biff = no
+empty_address_recipient = MAILER-DAEMON
+queue_minfree = 120000000
+content_filter = smtp-amavis:[127.0.0.1]:10024
+
+# Size restrictions
+# 50 MB
+message_size_limit = 52428800
+mailbox_size_limit = 0

@@ -1,0 +1,25 @@
+# Enable installed protocols
+!include_try /usr/share/dovecot/protocols.d/*.protocol
+
+# A comma separated list of IPs or hosts where to listen in for connections. 
+# "*" listens in all IPv4 interfaces, "::" listens in all IPv6 interfaces.
+# If you want to specify non-default ports or anything more complex,
+# edit conf.d/master.conf.
+listen = *, ::
+
+# User ID settings
+first_valid_uid=<%= @node['etc']['passwd']['dovenull']['uid'] %>
+last_valid_uid=<%= @node['etc']['passwd']['dovenull']['uid'] %>
+first_valid_gid=<%= @node['etc']['group']['dovenull']['gid'] %>
+last_valid_gid=<%= @node['etc']['group']['dovenull']['gid'] %>
+
+
+
+# Most of the actual configuration gets included below. The filenames are
+# first sorted by their ASCII value and parsed in that order. The 00-prefixes
+# in filenames are intended to make it easier to understand the ordering.
+!include conf.d/*.conf
+
+# A config file can also tried to be included without giving an error if
+# it's not found:
+!include_try local.conf

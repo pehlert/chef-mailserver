@@ -1,0 +1,104 @@
+<?php
+$CONF['configured'] = true;
+
+// In order to setup Postfixadmin, you MUST specify a hashed password here.
+// To create the hash, visit setup.php in a browser and type a password into the field,
+// on submission it will be echoed out to you as a hashed value.
+$CONF['setup_password'] = '';
+
+// Postfix Admin Path
+// Set the location of your Postfix Admin installation here.
+// YOU MUST ENTER THE COMPLETE URL e.g. http://domain.tld/postfixadmin
+$CONF['postfix_admin_url'] = 'http://admin.<%= @node[:fqdn] %>';
+
+// shouldn't need changing.
+$CONF['postfix_admin_path'] = dirname(__FILE__);
+
+// Database Config
+// mysql = MySQL 3.23 and 4.0, 4.1 or 5
+// mysqli = MySQL 4.1+ 
+// pgsql = PostgreSQL
+$CONF['database_type'] = 'pgsql';
+$CONF['database_host'] = 'localhost';
+$CONF['database_user'] = 'mailadmin';
+$CONF['database_password'] = '<%= @node[:mailserver][:db_mailadmin_password] %>';
+$CONF['database_name'] = 'mailconfig';
+
+// Site Admin
+// Define the Site Admins email address below.
+// This will be used to send emails from to create mailboxes.
+$CONF['admin_email'] = 'postmaster@<%= @node[:fqdn] %>';
+
+// Default Aliases
+// The default aliases that need to be created for all domains.
+$CONF['default_aliases'] = array (
+    'abuse' => 'abuse@<%= @node[:fqdn] %>',
+    'hostmaster' => 'hostmaster@<%= @node[:fqdn] %>',
+    'postmaster' => 'postmaster@<%= @node[:fqdn] %>',
+    'webmaster' => 'webmaster@<%= @node[:fqdn] %>'
+);
+
+// Mailboxes
+$CONF['domain_path'] = 'YES';
+$CONF['domain_in_mailbox'] = 'NO';
+
+// Quota
+// When you want to enforce quota for your mailbox users set this to 'YES'.
+$CONF['quota'] = 'YES';
+// You can either use '1024000' or '1048576'
+$CONF['quota_multiplier'] = '1024000';
+
+// Header
+$CONF['show_header_text'] = 'NO';
+$CONF['header_text'] = ':: Postfix Admin ::';
+
+// link to display under 'Main' menu when logged in as a user.
+$CONF['user_footer_link'] = "<%= @node[:fqdn] %>";
+
+// Footer
+// Below information will be on all pages.
+// If you don't want the footer information to appear set this to 'NO'.
+$CONF['show_footer_text'] = 'NO';
+$CONF['footer_text'] = 'Return to change-this-to-your.domain.tld';
+$CONF['footer_link'] = 'http://change-this-to-your.domain.tld';
+
+// Welcome Message
+// This message is send to every newly created mailbox.
+// Change the text between EOM.
+$CONF['welcome_text'] = <<<EOM
+Hi,
+
+Welcome to your new account.
+EOM;
+
+// When creating mailboxes or aliases, check that the domain-part of the
+// address is legal by performing a name server look-up.
+$CONF['emailcheck_resolve_domain']='YES';
+
+// Specify '' for Dovecot and 'INBOX.' for Courier.
+$CONF['create_mailbox_subdirs_prefix']='';
+
+// Optional:
+// Show used quotas from Dovecot dictionary backend in virtual
+// mailbox listing.
+// See: DOCUMENTATION/DOVECOT.txt
+//      http://wiki.dovecot.org/Quota/Dict
+//
+$CONF['used_quotas'] = 'NO';
+
+// if you use dovecot >= 1.2, set this to yes.
+// Note about dovecot config: table "quota" is for 1.0 & 1.1, table "quota2" is for dovecot 1.2 and newer
+$CONF['new_quota_table'] = 'NO';
+
+// Theme Config
+// Specify your own logo and CSS file
+$CONF['theme_logo'] = 'images/logo-default.png';
+$CONF['theme_css'] = 'css/default.css';
+
+// XMLRPC Interface.
+// This should be only of use if you wish to use e.g the 
+// Postfixadmin-Squirrelmail package
+//  change to boolean true to enable xmlrpc
+$CONF['xmlrpc_enabled'] = false;
+
+/* vim: set expandtab softtabstop=4 tabstop=4 shiftwidth=4: */

@@ -1,0 +1,16 @@
+# Database driver: mysql, pgsql, sqlite
+driver = pgsql
+
+# Database connection string. This is driver-specific setting.
+connect = host=127.0.0.1 dbname=mailconfig user=mailauth password=<%= @node[:mailserver][:db_mailauth_password] %>
+
+# Default password scheme.
+default_pass_scheme = MD5
+
+user_query = SELECT ('/var/mail/' || maildir) AS home, <%= @node['etc']['passwd']['dovenull']['uid'] %> AS uid, <%= @node['etc']['group']['dovenull']['gid'] %> AS gid, ('*:bytes=' || quota) AS quota_rule \
+ FROM mailbox WHERE username = '%u' AND active = true
+
+password_query = SELECT ('/var/mail/' || maildir) AS userdb_home, username as user, password, \
+ <%= @node['etc']['passwd']['dovenull']['uid'] %> AS userdb_uid, <%= @node['etc']['group']['dovenull']['gid'] %> AS userdb_gid, \
+ ('*:bytes=' || quota) AS userdb_quota_rule FROM mailbox WHERE username = '%u' AND active = true
+
