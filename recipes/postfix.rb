@@ -25,8 +25,12 @@ service "postfix" do
   action :enable
 end
 
+# Get primary IPs of all nodes
+hosts = search(:node, "*:*", %w(ipaddress)).map { |n| n["ipaddress"] }
+
 template "/etc/postfix/main.cf" do
   source "postfix/main.cf.erb"
+  variables(:mynetworks => hosts)
   mode 0644
   owner "root"
   group "root"

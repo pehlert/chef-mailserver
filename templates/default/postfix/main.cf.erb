@@ -12,9 +12,7 @@ mail_owner = postfix
 # INTERNET HOST AND DOMAIN NAMES
 # 
 myhostname = <%= @node[:fqdn] %>
-
-# TODO: This should be the TLD..
-#mydomain = domain.tld
+mydomain = <%= @node[:fqdn].split('.').last(2).join('.') %>
 
 # SENDING MAIL
 # 
@@ -23,15 +21,12 @@ myorigin = $mydomain
 
 # TRUST AND RELAY CONTROL
 #
-# TODO: How can we automatically ensure that this has the right entries?! 
-#mynetworks = 88.198.51.243, 127.0.0.0/8
+mynetworks = <%= @mynetworks.join(', ') %>, 127.0.0.0/8
 #mynetworks = $config_directory/mynetworks
 #mynetworks = hash:/etc/postfix/network_table
 
 # DELIVERY TO MAILBOX
 #
-#home_mailbox = Mailbox
-#home_mailbox = Maildir/
 home_mailbox = .maildir/
 
 # The mailbox_command parameter specifies the optional external
@@ -43,7 +38,6 @@ home_mailbox = .maildir/
 # ALIAS THAT FORWARDS MAIL FOR ROOT TO A REAL USER.
 #
 mailbox_command = /usr/lib/dovecot/deliver
-#mailbox_command = /some/where/procmail -a "$EXTENSION"
 
 
 # SHOW SOFTWARE VERSION OR NOT
