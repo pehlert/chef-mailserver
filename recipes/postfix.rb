@@ -26,7 +26,7 @@ service "postfix" do
 end
 
 # Get primary IPs of all nodes
-hosts = search(:node, "*:*", %w(ipaddress)).map { |n| n["ipaddress"] }
+hosts = search(:node, "*:*").map { |n| n["ipaddress"] }
 
 template "/etc/postfix/main.cf" do
   source "postfix/main.cf.erb"
