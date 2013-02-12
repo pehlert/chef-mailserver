@@ -22,8 +22,9 @@
 include_recipe "database"
 
 # generate all passwords
-node.set_unless['mailserver']['db_mailadmin_password'] = secure_password
-node.set_unless['mailserver']['db_mailauth_password'] = secure_password
+%w(db_mailadmin_password db_mailauth_password).each do |pass|
+  node.normal_unless['mailserver'][pass] = secure_password
+end
 
 db_connection = { :host => 'localhost', :username => 'postgres', :password => node[:postgresql][:password][:postgres] }
 
